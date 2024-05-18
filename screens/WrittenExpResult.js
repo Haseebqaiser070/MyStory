@@ -5,11 +5,29 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import resultStyle from "../style/resultStyle";
 import ModalComponent from "../components/ConfirmModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRoute } from "@react-navigation/native";
 import Colors from "../colors/Color";
+import { useProgressBar } from '../context/ProgressBarContext';
 
 const WrittenExpResult = () => {
   const Navigator = useNavigation();
+  const [examType, setExamtype] = useState("");
+  const { restartProgress } = useProgressBar();
+ 
+  const route = useRoute();
+  const { data } = route?.params
+  useEffect(()=>{
+    console.log(data)
+    if(data == "LS"){
+      setExamtype("Listening")
+    }else{
+      if(data == "WS"){
+        setExamtype("Written")
+      }
+    }
+  },[])
+  
   const [isOpen, setIsOpen] = useState(false);
   
   const ConfirMExit = () =>{
@@ -23,6 +41,14 @@ const WrittenExpResult = () => {
      setIsOpen(false);
      Navigator.navigate('dashboard');
   }
+  const restartExam = () => {
+    restartProgress(); // Reset the progress bar
+    if (data === "LS") {
+      Navigator.navigate('listen');
+    } else if (data === "WS") {
+      Navigator.navigate('exammodule');
+    }
+  };
   return (
     <>
     <View style={examModuleStyle.mainConatiner}>
@@ -80,9 +106,9 @@ const WrittenExpResult = () => {
           </View>
         </View>
      
-      <TouchableOpacity>
-        <View style={resultStyle.leaveExamBtn}>
-          <Text style={resultStyle.textColorGray}>Restart Exam</Text>
+      <TouchableOpacity onPress={restartExam}>
+        <View style={resultStyle.leaveExamBtn}  >
+          <Text style={resultStyle.textColorWhite}>Restart Exam</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={ConfirMExit}>

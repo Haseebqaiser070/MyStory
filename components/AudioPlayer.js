@@ -1,14 +1,15 @@
+// components/AudioPlayer.js
 import React, { useState, useEffect } from 'react';
-import { Button, StyleSheet, View, TouchableOpacity, Image } from 'react-native';
+import { TouchableOpacity, Image, View, StyleSheet } from 'react-native';
 import { Audio } from 'expo-av';
+import { useAudioPlayer } from '../context/AudioPlayerContext';
 import Colors from '../colors/Color';
 
-export default function App() {
+const AudioPlayer = () => {
+  const { isPlaying, setIsPlaying } = useAudioPlayer();
   const [sound, setSound] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    // Load the sound file when the component mounts
     const loadSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
         require('../audios/audio.mp3')
@@ -17,7 +18,6 @@ export default function App() {
     };
     loadSound();
 
-    // Cleanup function
     return () => {
       if (sound) {
         sound.unloadAsync();
@@ -29,47 +29,45 @@ export default function App() {
     if (!sound) return;
 
     if (isPlaying) {
-      await sound.pauseAsync(); // Pause the sound
+      await sound.pauseAsync();
     } else {
-      await sound.playAsync(); // Play the sound
+      await sound.playAsync();
     }
-    setIsPlaying(!isPlaying); // Toggle the state
+    setIsPlaying(!isPlaying);
   };
 
   return (
-    <View style={AudioPLayer.audioPlayerConatienr}>
-      <TouchableOpacity title={isPlaying ? 'Pause Sound' : 'Play Sound'} onPress={toggleSound} >
-        <Image source={require('../img/volumeIcon.png')}></Image>
+    <View style={styles.audioPlayerContainer}>
+      <TouchableOpacity onPress={toggleSound}>
+        <Image source={ require('../img/volumeIcon.png')} />
       </TouchableOpacity>
-       <View style = {AudioPLayer.auidioBar}>
-        <View style = {AudioPLayer.auidioBarSub}></View>
-       </View>
-      <TouchableOpacity title={isPlaying ? 'Pause Sound' : 'Play Sound'} onPress={toggleSound} >
-        <Image source={require('../img/Pause.png')}></Image>
+      <View style={styles.audioBar}>
+        <View style={styles.audioBarSub} />
+      </View>
+      <TouchableOpacity onPress={toggleSound}>
+        <Image source={ require('../img/Pause.png')} />
       </TouchableOpacity>
     </View>
   );
-}
+};
 
-const AudioPLayer = StyleSheet.create(
-    {
-        audioPlayerConatienr:{
-            display:'flex',
-            flexDirection:'row',
-            justifyContent:'space-between',
-            alignItems:'center'
-        }, 
+const styles = StyleSheet.create({
+  audioPlayerContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  audioBar: {
+    width: '70%',
+    height: 5,
+    backgroundColor: Colors.cardBf,
+  },
+  audioBarSub: {
+    width: '50%',
+    height: 5,
+    backgroundColor: Colors.primary,
+  },
+});
 
-        auidioBar:{
-            width:'70%',
-            height:5,
-            backgroundColor:Colors.cardBf
-        }
-        ,
-        auidioBarSub:{
-            width:'50%',
-            height:5,
-            backgroundColor:Colors.primary
-        }
-    }
-);
+export default AudioPlayer;

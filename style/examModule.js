@@ -81,7 +81,7 @@ const examModuleStyle = StyleSheet.create({
    },
 
    btnNext:{
-    padding:10,
+    padding:5,
     paddingEnd:20,
     paddingStart:20,
     backgroundColor:Colors.primary,
@@ -93,7 +93,7 @@ const examModuleStyle = StyleSheet.create({
     paddingEnd:20,
     paddingStart:20,
     backgroundColor:Colors.chipColor,
-    marginTop:5,
+   
     borderRadius:30
    },
    btnTextColor:{

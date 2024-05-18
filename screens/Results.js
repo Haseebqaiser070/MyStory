@@ -8,10 +8,12 @@ import ModalComponent from "../components/ConfirmModal";
 import { useEffect, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import Colors from "../colors/Color";
+import { useProgressBar } from '../context/ProgressBarContext';
 
 
 const Results = () => {
   const [examType, setExamtype] = useState("");
+  const { restartProgress } = useProgressBar();
  
   const route = useRoute();
   const { data } = route?.params
@@ -41,15 +43,14 @@ const Results = () => {
      Navigator.navigate('dashboard');
   }
  
-  const restartExam = () =>{
-    if(data == "LS"){
-      Navigator.navigate('listen')
-    }else{
-      if(data == "WS"){
-        Navigator.navigate('exammodule')
-      }
+  const restartExam = () => {
+    restartProgress(); // Reset the progress bar
+    if (data === "LS") {
+      Navigator.navigate('listen');
+    } else if (data === "WS") {
+      Navigator.navigate('exammodule');
     }
-  }
+  };
 
    return (
     <>
@@ -136,7 +137,7 @@ const Results = () => {
       </ScrollView>
       <TouchableOpacity onPress={restartExam}>
         <View style={resultStyle.leaveExamBtn}>
-          <Text style={resultStyle.textColorGray}>Restart Exam</Text>
+          <Text style={resultStyle.textColorWhite}>Restart Exam</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={ConfirMExit}>

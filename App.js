@@ -24,6 +24,8 @@ import WrittenExpResult from './screens/WrittenExpResult';
 import WrittenCompre from './screens/WrittenCompre';
 import LsiteningModule from './screens/Listening';
 import Admin from './screens/Admin';
+import { ProgressBarProvider } from './context/ProgressBarContext';
+import { AudioPlayerProvider } from './context/AudioPlayerContext';
 
 
 
@@ -37,34 +39,39 @@ const screenOptions = {
 export default function App() {
   return (
     <>
-     <StatusBar style="auto" />
-     <NavigationContainer>
-      <Stack.Navigator screenOptions={screenOptions}>
-        <Stack.Screen  name='onboard' component={Home}/>
-        <Stack.Screen  name='register' component={Register}/>
-        <Stack.Screen name='dashboard' component={Dashboard}/>
-        <Stack.Screen name='studyspace' component={Studyspace}/>
-        <Stack.Screen name='studyspacetwo' component={StudyspaceTwo}/>
-        <Stack.Screen name='exammodule' component={ExamModule}/>
-        <Stack.Screen name='answer' component={AnswerSheet}/>
-        <Stack.Screen  name='result' component={Results}/>
-        <Stack.Screen  name='written' component={WrittenComp}/>
-        <Stack.Screen  name='wasses' component={WrittenCompAss}/>
-        <Stack.Screen  name='login' component={Login}/>
-        <Stack.Screen  name='profile' component={Profile}/>
-        <Stack.Screen name='forgot' component={ForgotPass}/>
-        <Stack.Screen name='examset' component={ExamSet}/>
-        <Stack.Screen name='writtenExp' component={WrittenExpTest}/>
-        <Stack.Screen name='writtenExam' component={WrittenExam}/>
-        <Stack.Screen name='editProfile' component={EditProfile}/>
-        <Stack.Screen name='oralSet' component={OralExamSet}/>
-        <Stack.Screen name='writtenExpResult' component={WrittenExpResult}/>
-        <Stack.Screen name='WrittenCom' component={WrittenCompre}/>
-        <Stack.Screen name='listen' component={LsiteningModule}/>
-        <Stack.Screen name='admin' component={Admin}/>
-      </Stack.Navigator>
-     </NavigationContainer>
-     
+      <StatusBar style="auto" />
+      <AudioPlayerProvider>
+        <ProgressBarProvider>
+          <NavigationContainer>
+            <Stack.Navigator screenOptions={screenOptions}>
+              <Stack.Screen name='onboard' component={Home} />
+              <Stack.Screen name='register' component={Register} />
+              <Stack.Screen name='dashboard' component={Dashboard} />
+              <Stack.Screen name='studyspace' component={Studyspace} />
+              <Stack.Screen name='studyspacetwo' component={StudyspaceTwo} />
+              <Stack.Screen name='exammodule' component={ExamModule} />
+              <Stack.Screen name='answer' component={AnswerSheet} />
+              <Stack.Screen name='result' component={Results} />
+              <Stack.Screen name='written' component={WrittenComp} />
+              <Stack.Screen name='wasses' component={WrittenCompAss} />
+              <Stack.Screen name='login' component={Login} />
+              <Stack.Screen name='profile' component={Profile} />
+              <Stack.Screen name='forgot' component={ForgotPass} />
+              <Stack.Screen name='examset' component={ExamSet} />
+              <Stack.Screen name='writtenExp' component={WrittenExpTest} />
+              <Stack.Screen name='writtenExam' component={WrittenExam} />
+              <Stack.Screen name='editProfile' component={EditProfile} />
+              <Stack.Screen name='oralSet' component={OralExamSet} />
+              <Stack.Screen name='writtenExpResult' component={WrittenExpResult} />
+              <Stack.Screen name='WrittenCom' component={WrittenCompre} />
+              <Stack.Screen name='listen' component={LsiteningModule} />
+              <Stack.Screen name='admin' component={Admin} />
+
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ProgressBarProvider>
+      </AudioPlayerProvider>
+
     </>
   );
 }
