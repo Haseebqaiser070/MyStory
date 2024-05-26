@@ -7,7 +7,7 @@ import Colors from '../colors/Color';
 const EditField = ({hint, type ,onVlaueChnaged, multilieflag, fontSizePx, isNull}) => {
   const [text, setText] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -15,7 +15,7 @@ const EditField = ({hint, type ,onVlaueChnaged, multilieflag, fontSizePx, isNull
     setText('');
     onVlaueChnaged("")
   };
- 
+
  const HandleChange= (value) =>{
     setText(value)
     onVlaueChnaged(value)
@@ -24,7 +24,7 @@ const EditField = ({hint, type ,onVlaueChnaged, multilieflag, fontSizePx, isNull
     <View style={[isNull?styles.inputContainerInnerError:styles.inputContainerInner]}>
       <TextInput
         style={[styles.input, {fontSize:fontSizePx}]}
-        placeholderTextColor={Colors.gray}
+        placeholderTextColor={Colors.white}
         fontSize={fontSizePx}
         placeholder={hint}
         value={text}
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   inputContainerInner: {
     flexDirection: 'row',
     borderBottomWidth: 2,
-    
+
     borderBottomColor: Colors.cardBf,
     alignItems: 'center',
     paddingBottom: 5,

@@ -46,7 +46,7 @@ const WrittenExpResult = () => {
     if (data === "LS") {
       Navigator.navigate('listen');
     } else if (data === "WS") {
-      Navigator.navigate('exammodule');
+      Navigator.navigate('writtenExam');
     }
   };
   return (

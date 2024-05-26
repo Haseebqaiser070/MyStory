@@ -46,19 +46,29 @@ const ProgressBar = () => {
         <View style={[styles.progressFill, { width: `${progress}%`, position: 'relative' }]} />
         <View style={{ position: "absolute", marginLeft: "50%" }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="15"
-              height="15"
-              fill="none"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <Circle cx="12" cy="12" r="10" />
-              <Path d="M8 6v6l4 2" />
+            <Svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <Path
+                  d="M10.875 6.625C10.875 9.04 8.915 11 6.5 11C4.085 11 2.125 9.04 2.125 6.625C2.125 4.21 4.085 2.25 6.5 2.25C8.915 2.25 10.875 4.21 10.875 6.625Z"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+              />
+              <Path
+                  d="M6.5 4V6.5"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+              />
+              <Path
+                  d="M5 1H8"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+              />
             </Svg>
 
             <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold', marginLeft: 4 }}>

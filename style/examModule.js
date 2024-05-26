@@ -84,6 +84,7 @@ const examModuleStyle = StyleSheet.create({
     padding:5,
     paddingEnd:20,
     paddingStart:20,
+       marginTop:5,
     backgroundColor:Colors.primary,
     marginRight:40,
     borderRadius:30
