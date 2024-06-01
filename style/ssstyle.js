@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import Colors from "../colors/Color";
-import { defineAnimation } from "react-native-reanimated";
+
 
 const ssStyle = StyleSheet.create({
     mainContainer:{

@@ -9,11 +9,13 @@ import { useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import Colors from "../colors/Color";
 import { useProgressBar } from '../context/ProgressBarContext';
+import ResultModal from "../components/ResultModal";
 
 const WrittenExpResult = () => {
   const Navigator = useNavigation();
   const [examType, setExamtype] = useState("");
   const { restartProgress } = useProgressBar();
+  const [showModal, setShowModal] = useState(false);
  
   const route = useRoute();
   const { data } = route?.params
@@ -51,6 +53,7 @@ const WrittenExpResult = () => {
   };
   return (
     <>
+      {showModal && <ResultModal restartExam={restartExam} setShowModal={setShowModal}/>}
     <View style={examModuleStyle.mainConatiner}>
       <ScrollView style={{ display: "flex", flexDirection: "column" }}>
         <View style={examModuleStyle.subContainer}>
@@ -106,7 +109,7 @@ const WrittenExpResult = () => {
           </View>
         </View>
      
-      <TouchableOpacity onPress={restartExam}>
+      <TouchableOpacity onPress={() => setShowModal(true)}>
         <View style={resultStyle.leaveExamBtn}  >
           <Text style={resultStyle.textColorWhite}>Restart Exam</Text>
         </View>

@@ -1,7 +1,6 @@
 import { Text, View, TouchableOpacity, Image } from "react-native";
 import examModuleStyle from "../style/examModule";
 import ssStyle from "../style/ssstyle";
-import ProgressBar from "../components/ProgressBar";
 import MCRadioButton from "../components/AnswerMCQ";
 import { ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";

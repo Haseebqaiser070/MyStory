@@ -84,9 +84,9 @@ const AudioPlayer = () => {
         <View style={styles.audioBar}>
           <View style={[styles.audioBarSub, { width: `${progress}%` }]} />
         </View>
-        <TouchableOpacity onPress={toggleMute}>
+        <TouchableOpacity  onPress={toggleMute}>
           {isMuted ? (
-              <Image source={require('../img/mute.png')} />
+              <Image  source={require('../img/mute.png')} />
           ) : (
               <Image source={require('../img/volumeIcon.png')} />
           )}

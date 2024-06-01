@@ -39,12 +39,11 @@ const writtenExamStyle = StyleSheet.create({
         borderRadius:20,
         paddingStart:20,
         paddingEnd:20,
-        marginTop:5,
+       height:30,
         marginEnd:10,
         marginStart:10,
         padding:8,
         marginBottom:5,
-
         backgroundColor:Colors.chipColor,
     },
 });
