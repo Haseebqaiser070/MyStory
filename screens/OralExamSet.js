@@ -26,7 +26,7 @@ const OralExamSet = () => {
           </View>
           <View style={examModuleStyle.contentContainer}>
             <View style={ExamStyle.CardContainer}>
-              <TouchableOpacity style={ExamStyle.card} onPress={()=>{ Navigator.navigate('listen')}}>
+              <TouchableOpacity style={ExamStyle.card} onPress={()=>{ Navigator.navigate('ListCompExam')}}>
                 <Image
                   source={require("../img/ic_exam_set_purple.png")}
                 ></Image>

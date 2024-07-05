@@ -1,50 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Colors from '../colors/Color';
 
-const RadioButton = ({ selected, onPress }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.radioButton, selected && styles.selected]}>
-    {selected && <View style={styles.radioButtonInner} />}
-  </TouchableOpacity>
-);
-
-const TwoViews = () => {
-  const [selectedView, setSelectedView] = useState('');
-
-  const handleSelectView = (view) => {
-    if (selectedView !== view) {
-      setSelectedView(view);
-    }
-  };
-
+const MCRadioButton = ({ options, onSelect, selectedOption }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.view}>
-        <TouchableOpacity style={styles.label}  onPress={() => handleSelectView('A')}>
-          <Text style={styles.text}>chien</Text>
-          <RadioButton selected={selectedView === 'A'} onPress={() => handleSelectView('A')} />
-        </TouchableOpacity>
+      <View style={styles.container}>
+        {options.map((option, index) => (
+            <TouchableOpacity key={index} style={styles.optionContainer} onPress={() => onSelect(index)}>
+              <Text style={styles.optionText}>{option}</Text>
+              <View style={[styles.radioButton, selectedOption === index && styles.selected]}>
+                {selectedOption === index && <View style={styles.radioButtonInner} />}
+              </View>
+            </TouchableOpacity>
+        ))}
       </View>
-      <TouchableOpacity style={styles.view} onPress={() => handleSelectView('B')}>
-        <View style={styles.label}>
-          <Text style={styles.text}>hat</Text>
-          <RadioButton selected={selectedView === 'B'} onPress={() => handleSelectView('B')} />
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.view} onPress={() => handleSelectView('C')}>
-        <View style={styles.label}>
-          <Text style={styles.text}>stylo</Text>
-          <RadioButton selected={selectedView === 'C'} onPress={() => handleSelectView('C')} />
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.view} onPress={() => handleSelectView('D')}>
-        <View style={styles.label}>
-          <Text style={styles.text}>chateux</Text>
-          <RadioButton selected={selectedView === 'D'} onPress={() => handleSelectView('D')} />
-        </View>
-      </TouchableOpacity>
-
-    </View>
   );
 };
 
@@ -52,29 +21,27 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    marginTop:20,
+    marginTop: 20,
   },
-  view: {
+  optionContainer: {
     backgroundColor: 'transparent',
     padding: 15,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: Colors.primary,
     marginBottom: 10,
-  },
-  label: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  text: {
+  optionText: {
     flex: 1,
-    color:Colors.white
+    color: Colors.white,
   },
   radioButton: {
     width: 30,
     height: 30,
-    borderRadius: 40/2,
+    borderRadius: 40 / 2,
     borderWidth: 2,
     borderColor: Colors.white,
     justifyContent: 'center',
@@ -84,7 +51,7 @@ const styles = StyleSheet.create({
   radioButtonInner: {
     width: 22,
     height: 22,
-    borderRadius: 30/2,
+    borderRadius: 30 / 2,
     backgroundColor: 'white',
   },
   selected: {
@@ -93,4 +60,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TwoViews;
+export default MCRadioButton;

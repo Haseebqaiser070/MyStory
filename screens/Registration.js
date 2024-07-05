@@ -1,176 +1,243 @@
-import { View, Text, Image, SafeAreaView, ImageBackground } from "react-native";
-import RegisStyle from "../style/RegisStyle";
-import { StatusBar } from "expo-status-bar";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import InputField from "../components/Input";
-import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState } from 'react';
+import { View, Text, Image, ImageBackground, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import InputField from '../components/Input';
+import RegisStyle from '../style/RegisStyle';
+import { useNavigation } from '@react-navigation/native';
+import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';
+import { db } from '../firebaseConfig'; // Import Firestore database
+import { collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
+
 const Register = () => {
   const Navigator = useNavigation();
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPass] = useState("");
-  const [confirmPass, setConfirmPass] = useState("");
- 
-  const [isEmailNull, setEmailNull] = useState(false)
-  const [isNameNull, setNameNull] = useState(false)
-  const [isPassNull, setPassNull] = useState(false)
-  const [isConfirmNull, setConfirmNull] = useState(false)
-  const [passConfirmed, setPassCon] = useState(false)
-  //
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [password, setPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
+  const [isEmailNull, setEmailNull] = useState(false);
+  const [isNameNull, setNameNull] = useState(false);
+  const [isPassNull, setPassNull] = useState(false);
+  const [isConfirmNull, setConfirmNull] = useState(false);
+  const [passConfirmed, setPassCon] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const validateEmail = (email) => {
-    // Regular expression to check email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  //
+
   const emailCallBack = (value) => {
     if (validateEmail(value)) {
-      setEmail(value)
-      setEmailNull(false)
+      setEmail(value);
+      setEmailNull(false);
     } else {
-      setEmail(value)
-      setEmailNull(true)
+      setEmail(value);
+      setEmailNull(true);
     }
   };
+
   const nameCallBack = (value) => {
-    if(value != ''){
+    if (value !== '') {
       setName(value);
-      setNameNull(false)
-    }else{
-      
-      setNameNull(true)
+      setNameNull(false);
+    } else {
+      setNameNull(true);
     }
-   
   };
 
-  const passCallback = (value) =>{
+  const passCallback = (value) => {
     setPass(value);
-    if(password == confirmPass){
-      setPassNull(false)
-      setConfirmNull(false)
+    if (value === confirmPass) {
+      setPassCon(true);
+      setPassNull(false);
+      setConfirmNull(false);
+    } else {
+      setPassCon(false);
     }
-  } 
-const confirmCallback = (value) =>{
-  setConfirmPass(value);
-  if(password == confirmPass){
-    setPassNull(false)
-    setConfirmNull(false)
-  }
-}
+  };
 
-  const continueTo = ()=>{
-     if(email == '' || !validateEmail(email)){
-       setEmailNull(true)
-     }else{
-      setEmailNull(false)
-     }
-
-    if(name  == ''){
-      setNameNull(true)
-    }else{
-      setNameNull(false)
+  const confirmCallback = (value) => {
+    setConfirmPass(value);
+    if (value === password) {
+      setPassCon(true);
+      setPassNull(false);
+      setConfirmNull(false);
+    } else {
+      setPassCon(false);
     }
+  };
 
-    if(password == ""){
-      setPassNull(true)
-    }else{
-      setPassNull(false)
+  const continueTo = () => {
+    // Validate email
+    if (email === '' || !validateEmail(email)) {
+      setEmailNull(true);
+      setError('Please enter a valid email');
+      return; // Exit function if email is invalid
+    } else {
+      setEmailNull(false);
     }
 
-    if(confirmPass == ""){
-      setConfirmNull(true)
-    }else{
-      setConfirmNull(false)
-    }
-     
-    if(password == confirmPass){
-      setPassCon(true)
-    }else{
-      setPassNull(true)
-      setConfirmNull(true)
+    // Validate name
+    if (name === '') {
+      setNameNull(true);
+      setError('Please enter your name');
+      return; // Exit function if name is invalid
+    } else {
+      setNameNull(false);
     }
 
-    if(email != "" && password != "" && name != "" && confirmPass != "" && passConfirmed == true){
-      Navigator.navigate('studyspace');
+    // Validate password
+    if (password === '') {
+      setPassNull(true);
+      setError('Please enter a password');
+      return; // Exit function if password is invalid
+    } else {
+      setPassNull(false);
     }
-     
-  }
+
+    // Validate confirmation password
+    if (confirmPass === '') {
+      setConfirmNull(true);
+      setError('Please confirm your password');
+      return; // Exit function if confirmation password is invalid
+    } else {
+      setConfirmNull(false);
+    }
+
+    // Check if password matches confirmation password
+    if (password !== confirmPass) {
+      setPassCon(false);
+      setError('Passwords do not match');
+      return; // Exit function if passwords don't match
+    } else {
+      setPassCon(true);
+    }
+
+    setIsLoading(true);
+
+    // If all validations pass, proceed with user registration
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          updateProfile(user, { displayName: name })
+              .then(() => {
+                // Add user data to Firestore collection
+                const usersCollectionRef = collection(db, 'users');
+                addDoc(usersCollectionRef, {
+                  name: name,
+                  email: email,
+                  level: ''
+                })
+                    .then(() => {
+                      setIsLoading(false);
+                      Navigator.navigate('studyspace', {
+                        name: name,
+                        email: email,
+                        level: ''
+                      });
+                    })
+                    .catch((error) => {
+                      setIsLoading(false);
+                      console.error('Error adding document:', error);
+                      setError(error.message);
+                    });
+              })
+              .catch((error) => {
+                setIsLoading(false);
+                console.error('Error updating profile:', error);
+                setError(error.message);
+              });
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          console.error('Signup error:', error.code, error.message);
+          setError(error.message);
+        });
+  };
 
   return (
-    <View style={RegisStyle.mainContainer}>
-      <ImageBackground source={require('../img/bg_t.png')} style = {{flex:1}}>
-      <ScrollView style={RegisStyle.mainContainer}>
-        
-        <TouchableOpacity onPress={()=>{Navigator.goBack()}}>
-          <View style={RegisStyle.backButtonContainer}>
-            <Image source={require("../img/back.png")} />
-          </View>
-        </TouchableOpacity>
-        <View style={RegisStyle.mainUIContainer}>
-          <Text style={RegisStyle.heading}>Register</Text>
-          <View style={RegisStyle.inputContainer}>
-            <Text style={RegisStyle.TextColor}>YOUR EMAIL</Text>
-            <View style={RegisStyle.InputContainer}>
-              <InputField
-                hint={"jhonedoe@example.com"}
-                type={false}
-                multilieflag={false}
-                onVlaueChnaged={emailCallBack}
-                isnull={isEmailNull}
-                fontSizePx={16}
-              ></InputField>
-            </View>
-            <View style={RegisStyle.InputContainer}>
-              <Text style={RegisStyle.TextColor}>YOUR NAME</Text>
-              <View style={RegisStyle.InputContainer}>
-                <InputField
-                  hint={"Jhone Doe"}
-                  type={false}
-                  multilieflag={false}
-                  onVlaueChnaged={nameCallBack}
-                  isnull={isNameNull}
-                  fontSizePx={20}
-                ></InputField>
+      <View style={RegisStyle.mainContainer}>
+        <ImageBackground source={require('../img/bg_t.png')} style={{ flex: 1 }}>
+          <ScrollView style={RegisStyle.mainContainer}>
+            <TouchableOpacity onPress={() => { Navigator.goBack(); }}>
+              <View style={RegisStyle.backButtonContainer}>
+                <Image source={require('../img/back.png')} />
+              </View>
+            </TouchableOpacity>
+            <View style={RegisStyle.mainUIContainer}>
+              <Text style={RegisStyle.heading}>Register</Text>
+              <View style={RegisStyle.inputContainer}>
+                <Text style={RegisStyle.TextColor}>YOUR EMAIL</Text>
+                <View style={RegisStyle.InputContainer}>
+                  <InputField
+                      hint={'jhonedoe@example.com'}
+                      type={false}
+                      isnull={isEmailNull}
+                      multilieflag={false}
+                      onVlaueChnaged={emailCallBack}
+                      fontSizePx={16}
+                  />
+                </View>
+                <View style={RegisStyle.InputContainer}>
+                  <Text style={RegisStyle.TextColor}>YOUR NAME</Text>
+                  <View style={RegisStyle.InputContainer}>
+                    <InputField
+                        hint={'Jhone Doe'}
+                        type={false}
+                        isnull={isNameNull}
+                        multilieflag={false}
+                        onVlaueChnaged={nameCallBack}
+                        fontSizePx={20}
+                    />
+                  </View>
+                </View>
+                <View style={RegisStyle.InputContainer}>
+                  <Text style={RegisStyle.TextColor}>SET PASSWORD</Text>
+                  <View style={RegisStyle.InputContainer}>
+                    <InputField
+                        hint={'*****'}
+                        type={true}
+                        isnull={isPassNull}
+                        multilieflag={false}
+                        onVlaueChnaged={passCallback}
+                        fontSizePx={16}
+                    />
+                  </View>
+                </View>
+                <View style={RegisStyle.InputContainer}>
+                  <Text style={RegisStyle.TextColor}>CONFIRM PASSWORD</Text>
+                  <View style={RegisStyle.InputContainer}>
+                    <InputField
+                        hint={'*****'}
+                        type={true}
+                        isnull={isConfirmNull}
+                        multilieflag={false}
+                        onVlaueChnaged={confirmCallback}
+                        fontSizePx={16}
+                    />
+                  </View>
+                </View>
               </View>
             </View>
-            <View style={RegisStyle.InputContainer}>
-              <Text style={RegisStyle.TextColor}>SET PASSWORD</Text>
-              <View style={RegisStyle.InputContainer}>
-                <InputField
-                  hint={"*****"}
-                  type={true}
-                  multilieflag={false}
-                  onVlaueChnaged={passCallback}
-                  isnull={isPassNull}
-                  fontSizePx={16}
-                ></InputField>
+          </ScrollView>
+          {error ? (
+              <View style={{ position: 'absolute', bottom: 20, left: 20, right: 20, zIndex: 999, backgroundColor: 'red', padding: 10, borderRadius: 5 }}>
+                <Text style={{ color: '#fff' }}>{error}</Text>
               </View>
+          ) : null}
+          <TouchableOpacity onPress={continueTo} disabled={isLoading}>
+            <View style={RegisStyle.bottomButton}>
+              {isLoading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                  <Text style={RegisStyle.buttonText}>Continue</Text>
+              )}
             </View>
-
-            <View style={RegisStyle.InputContainer}>
-              <Text style={RegisStyle.TextColor}>CONFIRM PASSWORD</Text>
-              <View style={RegisStyle.InputContainer}>
-                <InputField
-                  hint={"*****"}
-                  type={true}
-                  multilieflag={false}
-                  onVlaueChnaged={confirmCallback}
-                  isnull={isConfirmNull}
-                  fontSizePx={16}
-                ></InputField>
-              </View>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-      <TouchableOpacity onPress={continueTo}>
-        <View style={RegisStyle.bottomButton}>
-          <Text style={RegisStyle.buttonText}>Continue</Text>
-        </View>
-      </TouchableOpacity>
-      </ImageBackground>
-    </View>
+          </TouchableOpacity>
+        </ImageBackground>
+      </View>
   );
 };
 

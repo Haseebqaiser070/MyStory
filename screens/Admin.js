@@ -29,11 +29,6 @@ const Admin = () => {
           </View>
           <View style={examModuleStyle.contentContainer}>
           <MCQCom></MCQCom>
-          <View>
-           <TouchableOpacity style = {McqStyles.savebtn}>
-            <Text style = {McqStyles.saveBtnStyle}>Save MCQ</Text>
-           </TouchableOpacity>
-          </View>
           </View>
         </View>
       </ScrollView>
@@ -42,20 +37,5 @@ const Admin = () => {
 };
 
 const McqStyles = StyleSheet.create({
-  savebtn:{
-    display:'flex',
-    justifyContent:'flex-end',
-    alignItems:'flex-end',
-    marginTop:20,
-    marginBottom:20,
-  },
-  saveBtnStyle:{
-    backgroundColor:Colors.primary,
-    color:Colors.white, 
-    padding:15,
-    fontSize:18,
-    borderRadius:30,
-    
-  }
 });
 export default Admin;

@@ -3,7 +3,7 @@ import { Modal, View, Text, Button, StyleSheet ,Image, TouchableOpacity} from "r
 import Colors from "../colors/Color";
 
 
-const ModalComponent = ({ isOpen, onClose, onRedirect, message }) => {
+const ModalComponent = ({ isOpen, onClose, onRedirect, message,  }) => {
   return (
     <Modal
       animationType="slide"
@@ -18,7 +18,7 @@ const ModalComponent = ({ isOpen, onClose, onRedirect, message }) => {
           <TouchableOpacity onPress={onClose}>
           <Image source={require('../img/close.png')}/>
           </TouchableOpacity>
-          
+
         </View>
         <View style = {styles.messageContainer}>
             <Text style = {styles.textColorModalMessage}>{message}</Text>
@@ -26,7 +26,7 @@ const ModalComponent = ({ isOpen, onClose, onRedirect, message }) => {
         <TouchableOpacity style = {styles.btnOk} onPress={onRedirect}>
             <Text style = {styles.textColor}>Yes</Text>
         </TouchableOpacity>
-          
+
         <TouchableOpacity style = {styles.btnNo} onPress={onClose}>
             <Text style = {styles.textColor}>No</Text>
         </TouchableOpacity>

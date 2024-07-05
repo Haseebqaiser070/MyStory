@@ -1,69 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, TextInput } from 'react-native';
+import React from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Colors from '../colors/Color';
 
 const RadioButton = ({ selected, onPress }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.radioButton, selected && styles.selected]}>
-    {selected && <View style={styles.radioButtonInner} ><Image source={require('../img/tick.png')}></Image></View>}
-  </TouchableOpacity>
+    <TouchableOpacity onPress={onPress} style={[styles.radioButton, selected && styles.selected]}>
+      {selected && <View style={styles.radioButtonInner}><Image source={require('../img/tick.png')} /></View>}
+    </TouchableOpacity>
 );
 
-const TwoViews = () => {
-  const [selectedView, setSelectedView] = useState('');
-
-  const handleSelectView = (view) => {
-    if (selectedView !== view) {
-      setSelectedView(view);
-    }
+const AdminMCQ = ({ options, setOptions, correctOptionIndex, setCorrectOptionIndex }) => {
+  const handleOptionChange = (index, text) => {
+    setOptions(index, text);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.view}>
-        <View style={styles.label}>
-        <TextInput
-      style={styles.input}
-      placeholder="Please write option here"
-      placeholderTextColor="#ffffff"
-      selectionColor={Colors.primary}
-    />
-          <RadioButton selected={selectedView === 'A'} onPress={() => handleSelectView('A')} />
-        </View>
+      <View style={styles.container}>
+        {options.map((option, index) => (
+            <View style={styles.view} key={index}>
+              <View style={styles.label}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Please write option here"
+                    placeholderTextColor="#ffffff"
+                    selectionColor={Colors.primary}
+                    value={option}
+                    onChangeText={(text) => handleOptionChange(index, text)}
+                />
+                <RadioButton
+                    selected={correctOptionIndex === index}
+                    onPress={() => setCorrectOptionIndex(index)}
+                />
+              </View>
+            </View>
+        ))}
       </View>
-      <View style={styles.view}>
-        <View style={styles.label}>
-        <TextInput
-      style={styles.input}
-      placeholder="Please write option here"
-      placeholderTextColor="#ffffff"
-      selectionColor={Colors.primary}
-    />
-          <RadioButton selected={selectedView === 'B'} onPress={() => handleSelectView('B')} />
-        </View>
-      </View>
-      <View style={styles.view}>
-        <View style={styles.label}>
-        <TextInput
-      style={styles.input}
-      placeholder="Please write option here"
-      placeholderTextColor="#ffffff"
-      selectionColor={Colors.primary}
-    />
-          <RadioButton selected={selectedView === 'C'} onPress={() => handleSelectView('C')} />
-        </View>
-      </View>
-      <View style={styles.view}>
-        <View style={styles.label}>
-        <TextInput
-      style={styles.input}
-      placeholder="Please write option here"
-      placeholderTextColor="#ffffff"
-      selectionColor={Colors.primary}
-    />
-          <RadioButton selected={selectedView === 'D'} onPress={() => handleSelectView('D')} />
-        </View>
-      </View>
-    </View>
   );
 };
 
@@ -71,7 +41,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    marginTop:10,
+    marginTop: 10,
   },
   view: {
     backgroundColor: 'transparent',
@@ -86,14 +56,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  text: {
+  input: {
     flex: 1,
-    color:Colors.white
+    color: Colors.white,
   },
   radioButton: {
     width: 30,
     height: 30,
-    borderRadius: 40/2,
+    borderRadius: 40 / 2,
     borderWidth: 2,
     borderColor: Colors.white,
     justifyContent: 'center',
@@ -103,18 +73,15 @@ const styles = StyleSheet.create({
   radioButtonInner: {
     width: 22,
     height: 22,
-    borderRadius: 30/2,
+    borderRadius: 30 / 2,
     backgroundColor: 'green',
-    justifyContent:'center',
-    alignItems:'center'
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   selected: {
     borderColor: 'green',
     borderWidth: 4,
   },
-  input:{
-    color:Colors.white
-  }
 });
 
-export default TwoViews;
+export default AdminMCQ;

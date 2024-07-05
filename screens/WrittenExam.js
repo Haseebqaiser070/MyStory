@@ -1,84 +1,139 @@
-import { Text, View, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, TouchableOpacity, Image, ScrollView, ActivityIndicator } from "react-native";
 import examModuleStyle from "../style/examModule";
 import InputField from "../components/Input";
 import ssStyle from "../style/ssstyle";
 import ProgressBar from "../components/ProgressBar";
-import MCRadioButton from "../components/McqQuestion";
-import { ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import writtenExamStyle from "../style/WrittenExamStyle";
-import { useState } from "react";
 import Dialoge from "../components/Dialoge";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConfig"; // Import your Firestore instance
 
 const WrittenExam = () => {
-    const Navigator  = useNavigation();
-    const onAnswerAdd =(value) => { }
-    const [isOpen, setIsopen] = useState(false);
-    const openTip = () =>{
-      setIsopen(true)
+  const Navigator = useNavigation();
+  const [questions, setQuestions] = useState([]);
+  const [userAnswers, setUserAnswers] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchQuestionsFromFirestore();
+  }, []);
+
+  const fetchQuestionsFromFirestore = async () => {
+    try {
+      const paragraphsCollection = collection(db, "questions", "WrittenExpression", "Paragraphs");
+      const querySnapshot = await getDocs(paragraphsCollection);
+      const fetchedQuestions = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        if (docData && docData.question) {
+          fetchedQuestions.push(docData.question);
+        }
+      });
+      setQuestions(fetchedQuestions);
+      setUserAnswers(Array(fetchedQuestions.length).fill(""));
+    } catch (error) {
+      console.error("Error fetching questions: ", error);
+    } finally {
+      setLoading(false);
     }
-    const onClose = () =>{
-      setIsopen(false)
+  };
+
+  const handleAnswerChange = (index, value) => {
+    const updatedAnswers = [...userAnswers];
+    updatedAnswers[index] = value;
+    setUserAnswers(updatedAnswers);
+  };
+
+  const openTip = () => {
+    setIsOpen(true);
+  };
+
+  const onClose = () => {
+    setIsOpen(false);
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      Navigator.navigate('writtenExpResult', { userAnswers, questions });
     }
+  };
+
+  const restartExam = () => {
+    setCurrentQuestionIndex(0); // Reset to the first question
+    setUserAnswers(Array(questions.length).fill(""));
+  };
+
+  if (loading) {
+    return (
+        <View style={[examModuleStyle.mainConatiner, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+    );
+  }
+
   return (
-    <>
-    <View style={examModuleStyle.mainConatiner}>
-        <ScrollView>
-      <View style={examModuleStyle.subContainer}>
-        <View style={ssStyle.actionBar}>
-          <TouchableOpacity style={ssStyle.backButton} onPress={()=>{Navigator.goBack()}}>
-            <Image source={require("../img/back.png")} />
-          </TouchableOpacity>
-          <View style={ssStyle.heading}>
-            <Text style={[ssStyle.textColor, { fontSize: 18 }]}>
-              Exam Module
-            </Text>
-          </View>
-        </View>
-        <View style={examModuleStyle.contentContainer}>
-          <View style={examModuleStyle.progressActionBar}>
-            <View style={examModuleStyle.progressWidth}>
-              <ProgressBar></ProgressBar>
+      <>
+        <View style={examModuleStyle.mainConatiner}>
+          <ScrollView>
+            <View style={examModuleStyle.subContainer}>
+              <View style={ssStyle.actionBar}>
+                <TouchableOpacity style={ssStyle.backButton} onPress={() => Navigator.goBack()}>
+                  <Image source={require("../img/back.png")} />
+                </TouchableOpacity>
+                <View style={ssStyle.heading}>
+                  <Text style={[ssStyle.textColor, { fontSize: 18 }]}>Exam Module</Text>
+                </View>
+              </View>
+              <View style={examModuleStyle.contentContainer}>
+                <View style={examModuleStyle.progressActionBar}>
+                  <View style={examModuleStyle.progressWidth}>
+                    <ProgressBar />
+                  </View>
+                  <View style={{ justifyContent: "center", alignItems: "center" }}>
+                    <View style={examModuleStyle.verticalDivider} />
+                  </View>
+                  <TouchableOpacity style={writtenExamStyle.countChip} onPress={openTip}>
+                    <Text style={examModuleStyle.btnTextColor}>Tips</Text>
+                  </TouchableOpacity>
+                </View>
+                {questions.length > 0 && (
+                    <View style={examModuleStyle.questionConatiner}>
+                      <Text style={examModuleStyle.questionText}>{questions[currentQuestionIndex]}</Text>
+                      <View>
+                        <Text style={writtenExamStyle.textHeading}>WRITE YOUR ANSWER HERE</Text>
+                      </View>
+                      <View style={writtenExamStyle.answerFieldPan}>
+                        <InputField
+                            hint={"Write your answer here"}
+                            multilieflag={true}
+                            onVlaueChnaged={(value) => handleAnswerChange(currentQuestionIndex, value)}
+                            fontSizePx={20}
+                        />
+                      </View>
+                    </View>
+                )}
+              </View>
             </View>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <View style={examModuleStyle.verticalDivider} />
+          </ScrollView>
+          <View style={examModuleStyle.bottomNavigation}>
+            <View style={writtenExamStyle.btnBottom}>
+              <View style={writtenExamStyle.countChipFill}>
+                <Text style={{ fontWeight: 'bold' }}>{currentQuestionIndex + 1}/{questions.length}</Text>
+              </View>
+              <TouchableOpacity style={examModuleStyle.btnNext} onPress={handleNextQuestion}>
+                <Text style={examModuleStyle.btnTextColor}>{currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}</Text>
+              </TouchableOpacity>
             </View>
-
-            <TouchableOpacity style={writtenExamStyle.countChip} onPress={openTip}>
-              <Text style = {examModuleStyle.btnTextColor}>Tips</Text>
-            </TouchableOpacity>
-
-          </View>
-          <View style={examModuleStyle.questionConatiner}>
-            <Text style={examModuleStyle.questionText}>
-              Je te laisse, je dois aller à la poste, je veux... ... un colis en
-              Espagne{" "}
-            </Text>
-          </View>
-          <View>
-            <Text style  ={writtenExamStyle.textHeading} >WRITE YOUR ANSWER HERE</Text>
-          </View>
-          <View style = {writtenExamStyle.answerFieldPan}>
-          <InputField hint={'write your answer here'} multilieflag={true} onVlaueChnaged={onAnswerAdd} fontSizePx={20}></InputField>
           </View>
         </View>
-      </View>
-      </ScrollView>
-      <View style = {examModuleStyle.bottomNavigation}>
-        <View style = {writtenExamStyle.btnBottom}>
-        <View style={writtenExamStyle.countChipFill}>
-              <Text style = {{fontWeight:'bold'}}>1/20</Text>
-            </View>    
-        <TouchableOpacity style = {examModuleStyle.btnNext} onPress={()=>{ Navigator.navigate('writtenExpResult', {data:'WS'})}}> 
-        <Text style = {examModuleStyle.btnTextColor}>Next</Text>
-        </TouchableOpacity>
-        </View>
-        
-      </View>
-      
-    </View>
-    <Dialoge isOpen={isOpen} onClose={onClose} title = {"Tip"} message={"think out the box to create it"}></Dialoge>
-    </>
+        <Dialoge isOpen={isOpen} onClose={onClose} title={"Tip"} message={"Think outside the box to create it"} />
+      </>
   );
 };
 
